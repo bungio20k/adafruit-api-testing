@@ -1,47 +1,32 @@
 import mongoose  from 'mongoose';
 const { Schema } = mongoose;
 
-const doorsListSchema = new Schema({
-    doors: [{
-        type: Schema.Types.ObjectId,
-        ref: 'door'
-    }],
-    logs: [{
-        type: Schema.Types.ObjectId,
-        ref: 'log'
-    }]
-})
-
-const roomsListSchema = new Schema({
-    rooms: [{
-        type: Schema.Types.ObjectId,
-        ref: 'room'
-    }],
-    logs: [{
-        type: Schema.Types.ObjectId,
-        ref: 'log'
-    }]
-})
-
 const userSchema = new Schema({
     username: { type: String, required: true },
     password: { type: String, required: true },
-    doorsList: doorsListSchema,
-    roomsList: roomsListSchema
 })
 
 const logSchema = new Schema({
+    ada_id: String,
     time: Date,
     action: String
 })
 
 const doorSchema = new Schema({
-    name: String,
-    open: Boolean,
+    feed_id: String,
+    name: {type: String, default: 'Cửa 1'},
+    open: {type: Boolean, default: false},
     begin_spectate: String,
     end_spectate: String,
-    warning_duration: Number,
-    log: Boolean,
+    warning_duration: {type: Number, default: 5},
+    log: {type: Boolean, default: true},
+    listLog: {
+        type: [{
+            type: Schema.Types.ObjectId,
+            ref: 'log'
+        }],
+        default: []
+    }
 })
 
 const roomSchema = new Schema({
@@ -55,10 +40,6 @@ const roomSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'light'
     }],
-    lightLogs: [{
-        type: Schema.Types.ObjectId,
-        ref: 'log'
-    }],
     gas_spectate_start: String,
     gas_spectate_end: String,
     gas_warning_duration: Number,
@@ -70,15 +51,17 @@ const lightSchema = new Schema({
     is_on: Boolean,
     auto: Boolean,
     interval: Number,
-    log: Boolean
+    log: Boolean,
+    lightLogs: [{
+        type: Schema.Types.ObjectId,
+        ref: 'log'
+    }],
 })
 
-const doorsList = mongoose.model('doorsList', doorsListSchema)
-const roomsList = mongoose.model('roomsList', roomsListSchema)
 const user = mongoose.model('user', userSchema)
 const log = mongoose.model('log', logSchema, 'logs')
 const door = mongoose.model('door', doorSchema, 'doors')
 const room = mongoose.model('room', roomSchema, 'rooms')
 const light = mongoose.model('light', lightSchema, 'lights')
 
-export {doorsList, roomsList, user, log, door, room, light}
+export {user, log, door, room, light}
