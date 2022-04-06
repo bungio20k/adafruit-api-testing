@@ -1,4 +1,4 @@
-import mongoose  from 'mongoose';
+import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
@@ -14,12 +14,12 @@ const logSchema = new Schema({
 
 const doorSchema = new Schema({
     feed_id: String,
-    name: {type: String, default: 'Cửa 1'},
-    open: {type: Boolean, default: false},
+    name: { type: String, default: 'Cửa 1' },
+    open: { type: Boolean, default: false },
     begin_spectate: String,
     end_spectate: String,
-    warning_duration: {type: Number, default: 5},
-    log: {type: Boolean, default: true},
+    warning_duration: { type: Number, default: 5 },
+    log: { type: Boolean, default: true },
     listLog: {
         type: [{
             type: Schema.Types.ObjectId,
@@ -31,31 +31,29 @@ const doorSchema = new Schema({
 
 const roomSchema = new Schema({
     name: String,
-    auto: Boolean,
     temperature: Number,
     humidity: Number,
     refresh: Number,
     temp_log: Boolean,
-    lightList: [{
-        type: Schema.Types.ObjectId,
-        ref: 'light'
-    }],
     gas_spectate_start: String,
     gas_spectate_end: String,
-    gas_warning_duration: Number,
     gas_log: Boolean
 })
 
 const lightSchema = new Schema({
+    feed_id: String,
     name: String,
     is_on: Boolean,
-    auto: Boolean,
-    interval: Number,
-    log: Boolean,
-    lightLogs: [{
-        type: Schema.Types.ObjectId,
-        ref: 'log'
-    }],
+    auto: { type: Boolean, default: false },
+    interval: { type: Number, default: 0 },
+    log: { type: Boolean, default: true },
+    lightLogs: {
+        type: [{
+            type: Schema.Types.ObjectId,
+            ref: 'log'
+        }],
+        default: []
+    }
 })
 
 const user = mongoose.model('user', userSchema)
@@ -64,4 +62,4 @@ const door = mongoose.model('door', doorSchema, 'doors')
 const room = mongoose.model('room', roomSchema, 'rooms')
 const light = mongoose.model('light', lightSchema, 'lights')
 
-export {user, log, door, room, light}
+export { user, log, door, room, light }
