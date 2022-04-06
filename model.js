@@ -29,15 +29,46 @@ const doorSchema = new Schema({
     }
 })
 
-const roomSchema = new Schema({
-    name: String,
-    temperature: Number,
-    humidity: Number,
-    refresh: Number,
-    temp_log: Boolean,
-    gas_spectate_start: String,
-    gas_spectate_end: String,
-    gas_log: Boolean
+const tempSchema = new Schema({
+    room: {type: String, default: 'Phòng 1'},
+    value: Number,
+    feed_id: String,
+    log: {type: Boolean, default: true},
+    listLog: {
+        type: [{
+            type: Schema.Types.ObjectId,
+            ref: 'log'
+        }],
+        default: []
+    }
+})
+
+const humidSchema = new Schema({
+    room: {type: String, default: 'Phòng 1'},
+    value: Number,
+    feed_id: String,
+    log: {type: Boolean, default: true},
+    listLog: {
+        type: [{
+            type: Schema.Types.ObjectId,
+            ref: 'log'
+        }],
+        default: []
+    }
+})
+
+const gasSchema = new Schema({
+    room: {type: String, default: 'Phòng 1'},
+    value: Number,
+    feed_id: String,
+    log: {type: Boolean, default: true},
+    listLog: {
+        type: [{
+            type: Schema.Types.ObjectId,
+            ref: 'log'
+        }],
+        default: []
+    }
 })
 
 const lightSchema = new Schema({
@@ -59,7 +90,8 @@ const lightSchema = new Schema({
 const user = mongoose.model('user', userSchema)
 const log = mongoose.model('log', logSchema, 'logs')
 const door = mongoose.model('door', doorSchema, 'doors')
-const room = mongoose.model('room', roomSchema, 'rooms')
 const light = mongoose.model('light', lightSchema, 'lights')
-
-export { user, log, door, room, light }
+const temp = mongoose.model('temp', tempSchema)
+const humid = mongoose.model('humid', humidSchema)
+const gas = mongoose.model('gas', gasSchema)
+export { user, log, door, light, temp, humid, gas}

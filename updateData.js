@@ -6,15 +6,16 @@ const config = {
 }
 const origin = 'https://io.adafruit.com/api/v2/giangnam1905'
 
-import { user, log, door, room, light } from './model.js'
+import { user, log, door, light, temp, humid, gas } from './model.js'
 
-const updateData = () => {
+const updateAll = () => {
     const door = updateDoor()
     const light1 = updateLight1()
     const light2 = updateLight2()
     const gas = updateGas()
-    const tempHumid = updateTempHumid()
-    Promise.all([door, light1, light2, gas, tempHumid]).then().catch(error => {
+    const temp = updateTemp()
+    const humid = updateHumid()
+    Promise.all([door, light1, light2, gas, temp, humid]).then().catch(error => {
         console.log(error)
     })
 }
@@ -36,6 +37,10 @@ const updateDoor = async () => {
         })
     }
     else {
+        findDoor.open = data.value == 'OPEN'
+        findDoor.save((err) => {
+            if (err) console.log(err)
+        })
         const findLog = await log.findOne({ 'ada_id': data.id })
         if (!findLog) {
             const newLog = {
@@ -72,6 +77,10 @@ const updateLight1 = async () => {
         })
     }
     else {
+        findLight1.is_on = led1.value == '1'
+        findLight1.save((err) => {
+            if (err) console.log(err)
+        })
         const findLog = await log.findOne({ 'ada_id': led1.id })
         if (!findLog) {
             const newLog = {
@@ -105,10 +114,13 @@ const updateLight2 = async () => {
         }
         light.create(newLight, (err, data) => {
             if (err) console.log(err)
-            else console.log(data)
         })
     }
     else {
+        findLight2.is_on = led2.value == '3'
+        findLight2.save((err) => {
+            if (err) console.log(err)
+        })
         const findLog = await log.findOne({ 'ada_id': led2.id })
         if (!findLog) {
             const newLog = {
@@ -122,7 +134,6 @@ const updateLight2 = async () => {
                     findLight2.lightLogs.unshift(data._id)
                     findLight2.save((err, data) => {
                         if (err) console.log(err)
-                        else console.log(data)
                     })
                 }
             })
@@ -134,18 +145,117 @@ const updateGas = async () => {
     const data = await axios.get(origin + '/feeds/bbc-gas/data?limit=1').then((res) => {
         return res.data[0]
     })
-    // console.log(data)
+    const findGas = await gas.findOne({ 'feed_id': data.feed_id })
+    if (!findGas) {
+        const newGas = {
+            'value': data.value,
+            'feed_id': data.feed_id
+        }
+        gas.create(newGas, (err, data) => {
+            if (err) console.log(err)
+        })
+    }
+    else {
+        findGas.value = data.value
+        findGas.save((err) => {
+            if (err) console.log(err)
+        })
+        const findLog = await log.findOne({ 'ada_id': data.id })
+        if (!findLog) {
+            const newLog = {
+                'ada_id': data.id,
+                'time': data.created_at,
+                'action': 'Nồng độ khí gas tại phòng 1: ' + data.value
+            }
+            log.create(newLog, (err, data) => {
+                if (err) console.log(err)
+                else {
+                    findGas.listLog.unshift(data._id)
+                    findGas.save((err, data) => {
+                        if (err) console.log(err)
+                    })
+                }
+            })
+        }
+    }
 }
 
-const updateTempHumid = async () => {
-    const temp = await axios.get(origin + '/feeds/bbc-temp/data?limit=1').then((res) => {
+const updateTemp = async () => {
+    const data = await axios.get(origin + '/feeds/bbc-temp/data?limit=1').then((res) => {
         return res.data[0]
     })
-    const humid = await axios.get(origin + '/feeds/bbc-humi/data?limit=1').then((res) => {
-        return res.data[0]
-    })
-    // console.log(temp);
-    // console.log(humid);
+    const findTemp = await temp.findOne({ 'feed_id': data.feed_id })
+    if (!findTemp) {
+        const newTemp = {
+            'value': data.value,
+            'feed_id': data.feed_id
+        }
+        temp.create(newTemp, (err, data) => {
+            if (err) console.log(err)
+        })
+    }
+    else {
+        findTemp.value = data.value
+        findTemp.save((err) => {
+            if (err) console.log(err)
+        })
+        const findLog = await log.findOne({ 'ada_id': data.id })
+        if (!findLog) {
+            const newLog = {
+                'ada_id': data.id,
+                'time': data.created_at,
+                'action': 'Nhiệt độ tại phòng 1: ' + data.value
+            }
+            log.create(newLog, (err, data) => {
+                if (err) console.log(err)
+                else {
+                    findTemp.listLog.unshift(data._id)
+                    findTemp.save((err, data) => {
+                        if (err) console.log(err)
+                    })
+                }
+            })
+        }
+    }
 }
 
-export { updateData };
+const updateHumid = async () => {
+    const data = await axios.get(origin + '/feeds/bbc-humi/data?limit=1').then((res) => {
+        return res.data[0]
+    })
+    const findHumid = await humid.findOne({ 'feed_id': data.feed_id })
+    if (!findHumid) {
+        const newHumid = {
+            'value': data.value,
+            'feed_id': data.feed_id
+        }
+        humid.create(newHumid, (err, data) => {
+            if (err) console.log(err)
+        })
+    }
+    else {
+        findHumid.value = data.value
+        findHumid.save((err) => {
+            if (err) console.log(err)
+        })
+        const findLog = await log.findOne({ 'ada_id': data.id })
+        if (!findLog) {
+            const newLog = {
+                'ada_id': data.id,
+                'time': data.created_at,
+                'action': 'Độ ẩm tại phòng 1: ' + data.value
+            }
+            log.create(newLog, (err, data) => {
+                if (err) console.log(err)
+                else {
+                    findHumid.listLog.unshift(data._id)
+                    findHumid.save((err, data) => {
+                        if (err) console.log(err)
+                    })
+                }
+            })
+        }
+    }
+}
+
+export {updateAll};
