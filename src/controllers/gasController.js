@@ -1,7 +1,7 @@
-import {door} from '../models/doorModel.js'
+import { gas } from '../models/gasModel.js'
 
 const getData = async (req, res) => {
-    door.find({}, (err, data) => {
+    gas.find({}, (err, data) => {
         if (err) console.log(err)
         else res.send(data)
     })

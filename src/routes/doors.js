@@ -1,8 +1,8 @@
 import express from 'express'
 const doorsRouter = express.Router()
 
-import { getAll } from '../controllers/doorsController.js'
+import { getData } from '../controllers/doorsController.js'
 
-doorsRouter.get('/', getAll)
+doorsRouter.get('/', getData)
 
 export { doorsRouter }
