@@ -6,7 +6,12 @@ const config = {
 }
 const origin = 'https://io.adafruit.com/api/v2/giangnam1905'
 
-import { user, log, door, light, temp, humid, gas } from './model.js'
+import { log } from '../models/logModel.js'
+import { door } from '../models/doorModel.js'
+import { light } from '../models/lightModel.js'
+import { temp } from '../models/tempModel.js'
+import { humid } from '../models/humidModel.js'
+import { gas } from '../models/gasModel.js'
 
 const updateAll = () => {
     const door = updateDoor()
@@ -258,4 +263,4 @@ const updateHumid = async () => {
     }
 }
 
-export {updateAll};
+export { updateAll, updateDoor, updateLight1, updateLight2, updateGas, updateTemp, updateHumid };
